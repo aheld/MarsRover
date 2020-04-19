@@ -1,0 +1,25 @@
+{
+  "name": "marsrover",
+  "version": "1.0.0",
+  "description": "functional node version of mars rover",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "test:watch": "mocha --reporter spec -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aheld/MarsRover.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aheld/MarsRover/issues"
+  },
+  "homepage": "https://github.com/aheld/MarsRover#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "standard": "^14.3.3"
+  }
+}
