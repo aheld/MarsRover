@@ -82,10 +82,30 @@ function formatPosition (roverCommand) {
   return `${x} ${y} ${f}`
 }
 
+function pipeline (input, ...funcs) {
+  return funcs.reduce((acc,f) => f(acc), input)
+}
+
+// simpler way to implement pipeline
+// function pipeline(input, ...funcs) {
+//   let res = input
+//   funcs.forEach(func => {
+//     res = func(res)
+//   })
+//   return res
+// }
+
+function processMoves(roverCommand) {
+  if (roverCommand.moves.length === 0 ) return roverCommand
+  roverCommand = turnLeft(roverCommand)
+  roverCommand = turnRight(roverCommand)
+  roverCommand = moveRover(roverCommand)
+  return processMoves(roverCommand)
+}
+
 module.exports = function (commands) {
-  commands = parseCommands(commands)
-  commands = turnLeft(commands)
-  commands = turnRight(commands)
-  commands = moveRover(commands)
-  return formatPosition(commands)
+  return pipeline(commands,
+    parseCommands,
+    processMoves,
+    formatPosition)
 }

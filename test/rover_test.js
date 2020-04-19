@@ -86,3 +86,34 @@ describe('Rover that Moves', function () {
     }
   })
 })
+
+describe('Rover that Turns and Moves multiple times', function () {
+  it('should move for known input', function () {
+    const noMoveInput = '5 5\n1 1 N\nMRM'
+    expect(rover(noMoveInput)).to.equal('2 2 E')
+  })
+  it('should move south right for simple input', function () {
+    const noMoveInput = '5 5\n1 1 S\nMLLMM'
+    expect(rover(noMoveInput)).to.equal('1 2 N')
+  })
+  it.skip('multiple moves should pass property based testing', function () {
+    this.timeout(150000)
+    const testRange = 100
+    for (let x = 0; x < testRange; x++) {
+      for (let y = 0; y < testRange; y++) {
+        ['N R E',
+          'N L W',
+          'S R W',
+          'S L E',
+          'E R S',
+          'W R N',
+          'E L N',
+          'W L S'].forEach(testcase => {
+          const [facing, turn, newFacing] = testcase.split(' ')
+          const simpleInput = `5 5\n${x} ${y} ${facing}\n${turn}`
+          assert.strictEqual(rover(simpleInput), `${x} ${y} ${newFacing}`)
+        })
+      }
+    }
+  })
+})
