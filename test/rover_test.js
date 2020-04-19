@@ -55,3 +55,34 @@ describe('Rover that turns', function () {
     }
   })
 })
+
+describe('Rover that Moves', function () {
+  it('should move north for simple input', function () {
+    const noMoveInput = '5 5\n1 1 N\nM'
+    expect(rover(noMoveInput)).to.equal('1 2 N')
+  })
+  it('should move south right for simple input', function () {
+    const noMoveInput = '5 5\n1 1 S\nM'
+    expect(rover(noMoveInput)).to.equal('1 0 S')
+  })
+  it('should pass property based testing', function () {
+    this.timeout(150000)
+    const testRange = 100
+    for (let x = 0; x < testRange; x++) {
+      for (let y = 0; y < testRange; y++) {
+        ['N R E',
+          'N L W',
+          'S R W',
+          'S L E',
+          'E R S',
+          'W R N',
+          'E L N',
+          'W L S'].forEach(testcase => {
+          const [facing, turn, newFacing] = testcase.split(' ')
+          const simpleInput = `5 5\n${x} ${y} ${facing}\n${turn}`
+          assert.strictEqual(rover(simpleInput), `${x} ${y} ${newFacing}`)
+        })
+      }
+    }
+  })
+})

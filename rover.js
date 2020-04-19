@@ -14,10 +14,10 @@ function parseCommands (stringInput) {
   return roverCommand
 }
 
-// Turn Related functions
-function _processMoveAndUpdateFacing (roverCommand, newFacing) {
+// Move Related functions
+function _processMoveAndUpdatePosition (roverCommand, newPosition) {
   const newRoverCommand = deepCopy(roverCommand)
-  newRoverCommand.startingPosition.facing = newFacing
+  newRoverCommand.startingPosition = newPosition
   newRoverCommand.moves = newRoverCommand.moves.slice(1)
   return newRoverCommand
 }
@@ -31,8 +31,12 @@ function turnLeft (roverCommand) {
   leftTurn.S = 'E'
   leftTurn.E = 'N'
 
-  const newFacing = leftTurn[roverCommand.startingPosition.facing]
-  return _processMoveAndUpdateFacing(roverCommand, newFacing)
+  const newPosition = {
+    x: roverCommand.startingPosition.x,
+    y: roverCommand.startingPosition.y,
+    facing: leftTurn[roverCommand.startingPosition.facing]
+  }
+  return _processMoveAndUpdatePosition(roverCommand, newPosition)
 }
 
 function turnRight (roverCommand) {
@@ -44,8 +48,31 @@ function turnRight (roverCommand) {
   rightTurn.S = 'W'
   rightTurn.E = 'S'
 
-  const newFacing = rightTurn[roverCommand.startingPosition.facing]
-  return _processMoveAndUpdateFacing(roverCommand, newFacing)
+  const newPosition = {
+    x: roverCommand.startingPosition.x,
+    y: roverCommand.startingPosition.y,
+    facing: rightTurn[roverCommand.startingPosition.facing]
+  }
+  return _processMoveAndUpdatePosition(roverCommand, newPosition)
+}
+
+function moveRover (roverCommand) {
+  if (roverCommand.moves[0] !== 'M') return roverCommand
+
+  const moveMatrix = new Map()
+  moveMatrix.N = [0, 1]
+  moveMatrix.W = [-1, 0]
+  moveMatrix.S = [0, -1]
+  moveMatrix.E = [1, 0]
+
+  const selectedMatrix = moveMatrix[roverCommand.startingPosition.facing]
+  const newPosition = {
+    x: parseInt(roverCommand.startingPosition.x) + selectedMatrix[0],
+    y: parseInt(roverCommand.startingPosition.y) + selectedMatrix[1],
+    facing: roverCommand.startingPosition.facing
+  }
+
+  return _processMoveAndUpdatePosition(roverCommand, newPosition)
 }
 
 function formatPosition (roverCommand) {
@@ -59,5 +86,6 @@ module.exports = function (commands) {
   commands = parseCommands(commands)
   commands = turnLeft(commands)
   commands = turnRight(commands)
+  commands = moveRover(commands)
   return formatPosition(commands)
 }
