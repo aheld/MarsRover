@@ -1,3 +1,10 @@
-module.exports = function (commands){
-  return "1 1 N"
+function parseCommands (stringInput) {
+  const [, startingPosition] = stringInput.split('\n')
+  return {
+    startingPosition
+  }
+}
+
+module.exports = function (commands) {
+  return parseCommands(commands).startingPosition
 }
