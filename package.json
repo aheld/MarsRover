@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
-    "test:watch": "mocha --reporter spec -w"
+    "test:watch": "mocha --reporter spec -w",
+    "lint": "standard --fix"
   },
   "repository": {
     "type": "git",
