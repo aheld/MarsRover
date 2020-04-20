@@ -33,3 +33,9 @@ the output should be
 1. A single rover that does not move
 2. A single rover that can turn (once)
 3. A single rover that can move (once)
+
+## Language versions
+1. C# https://github.com/aheld/MarsRover/tree/step-1
+1. Go https://github.com/aheld/MarsRover/tree/go
+1. Javascript https://github.com/aheld/MarsRover/tree/functional_node
+
