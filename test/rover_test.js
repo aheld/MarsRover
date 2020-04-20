@@ -146,7 +146,7 @@ describe('Multiple Rovers that makes multipe turns are equal', function () {
         const roverRL = rover(simpleInputRL)
         const simpleInputLR = genCmd(x, y, 'N', 'MRMLMRMLMRML', x + 1, y + 1, 'N', 'RMLMRMLMRMLM')
         const roverLR = rover(simpleInputLR)
-        //  console.log(simpleInputLR, '\n\n', roverLR)
+        assert.strictEqual(roverLR.split('\n').length, 2)
         assert.strictEqual(roverRL, roverLR)
       }
     }

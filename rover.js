@@ -1,5 +1,26 @@
 const deepCopy = require('./deep_copy')
 
+function parseMultiCommands (stringInput) {
+  const lines = stringInput.split('\n')
+  const board = lines[0]
+  const botsAndMoves = lines.splice(1)
+  const extractSingleBotCmds = (cmdArray, inputArray) => {
+    if (inputArray.length <= 0) return cmdArray
+    const [startPosition, moves, ...tail] = inputArray
+    cmdArray.push([board, startPosition, moves].join('\n'))
+    return extractSingleBotCmds(cmdArray, tail)
+  }
+  // easier logic
+  // const singleBotCommands = []
+  // for (let index = 0; index < botsAndMoves.length; index += 2) {
+  //   const bot = botsAndMoves[index]
+  //   const moves = botsAndMoves[index + 1]
+  //   singleBotCommands.push([board, bot, moves].join('\n'))
+  // }
+  // return singleBotCommands
+  return extractSingleBotCmds([], botsAndMoves)
+}
+
 function parseCommands (stringInput) {
   const [, startingPosition, moves] = stringInput.split('\n')
   const [x, y, facing] = startingPosition.split(' ')
@@ -102,9 +123,25 @@ function processMoves (roverCommand) {
   return processMoves(roverCommand)
 }
 
-module.exports = function (commands) {
+function processSingleBot (commands) {
   return pipeline(commands,
     parseCommands,
     processMoves,
     formatPosition)
+}
+
+function fanoutCommands (multiRoverCommands) {
+  return multiRoverCommands.map(processSingleBot)
+}
+
+function formatResultsToString (arrayOfRoverPositions) {
+  return arrayOfRoverPositions.join('\n')
+}
+
+module.exports = function (stringInput) {
+  return pipeline(stringInput,
+    parseMultiCommands,
+    fanoutCommands,
+    formatResultsToString
+  )
 }
