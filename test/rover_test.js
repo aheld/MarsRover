@@ -6,7 +6,7 @@ const rover = require('../rover')
 
 describe("Rover that doesn't move", function () {
   it('should not move for simple input', function () {
-    const noMoveInput = '5 5\n1 1 N'
+    const noMoveInput = '5000 5000\n1 1 N'
     expect(rover(noMoveInput)).to.equal('1 1 N')
   })
   it('should pass property based testing', function () {
