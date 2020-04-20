@@ -133,6 +133,11 @@ describe('Rover that makes multipe turns are equal', function () {
 })
 
 describe('Multiple Rovers that makes multipe turns are equal', function () {
+  it('mutliple rovers should move at the same time', function () {
+    const simpleInput = genCmd(1, 1, 'N', 'RMLMRMLMRMLM', 2, 2, 'N', 'RMLMRMLMRMLM')
+    const roverPos = rover(simpleInput)
+    assert.strictEqual(roverPos, '4 4 N\n5 5 N')
+  })
   it('multiple moves should pass property based testing', function () {
     const testRange = 100
     for (let x = 0; x < testRange; x++) {
@@ -141,7 +146,7 @@ describe('Multiple Rovers that makes multipe turns are equal', function () {
         const roverRL = rover(simpleInputRL)
         const simpleInputLR = genCmd(x, y, 'N', 'MRMLMRMLMRML', x + 1, y + 1, 'N', 'RMLMRMLMRMLM')
         const roverLR = rover(simpleInputLR)
-        // console.log(simpleInputLR, '\n\n', roverLR)
+        //  console.log(simpleInputLR, '\n\n', roverLR)
         assert.strictEqual(roverRL, roverLR)
       }
     }
