@@ -17,13 +17,15 @@
   "bugs": {
     "url": "https://github.com/aheld/MarsRover/issues"
   },
-  "standard":{
+  "engines": {
+    "node": ">= 12"
+  },
+  "standard": {
     "env": {
       "node": true,
       "mocha": true
     }
   },
-
   "homepage": "https://github.com/aheld/MarsRover#readme",
   "devDependencies": {
     "chai": "^4.2.0",
