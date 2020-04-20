@@ -3,15 +3,14 @@ const deepCopy = require('./deep_copy')
 function parseCommands (stringInput) {
   const [, startingPosition, moves] = stringInput.split('\n')
   const [x, y, facing] = startingPosition.split(' ')
-  const roverCommand = {
+  return {
     startingPosition: {
       x,
       y,
       facing
     },
-    moves: moves || []
+    moves: moves || ''
   }
-  return roverCommand
 }
 
 // Move Related functions
@@ -83,7 +82,7 @@ function formatPosition (roverCommand) {
 }
 
 function pipeline (input, ...funcs) {
-  return funcs.reduce((acc,f) => f(acc), input)
+  return funcs.reduce((acc, f) => f(acc), input)
 }
 
 // simpler way to implement pipeline
@@ -95,8 +94,8 @@ function pipeline (input, ...funcs) {
 //   return res
 // }
 
-function processMoves(roverCommand) {
-  if (roverCommand.moves.length === 0 ) return roverCommand
+function processMoves (roverCommand) {
+  if (roverCommand.moves.length === 0) return roverCommand
   roverCommand = turnLeft(roverCommand)
   roverCommand = turnRight(roverCommand)
   roverCommand = moveRover(roverCommand)
