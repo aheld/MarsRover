@@ -22,12 +22,18 @@ function parseMultiCommands (stringInput) {
 }
 
 function parseCommands (stringInput) {
-  const [, startingPosition, moves] = stringInput.split('\n')
+  const [board, startingPosition, moves] = stringInput.split('\n')
   const [x, y, facing] = startingPosition.split(' ')
+  function getBoardPoints (board) {
+    const [x, y] = board.split(' ').map((i) => parseInt(i))
+    return { x, y }
+  }
+
   return {
+    board: getBoardPoints(board),
     startingPosition: {
-      x,
-      y,
+      x: parseInt(x),
+      y: parseInt(y),
       facing
     },
     moves: moves || ''
@@ -96,6 +102,20 @@ function moveRover (roverCommand) {
   return _processMoveAndUpdatePosition(roverCommand, newPosition)
 }
 
+function keepRoverOnBoard (roverCommand) {
+  // console.log(roverCommand)
+  // if (roverCommand.startingPosition.y > roverCommand.board.y) console.log(roverCommand)
+  const newRoverCommand = deepCopy(roverCommand)
+  if (roverCommand.startingPosition.x < 0) newRoverCommand.startingPosition.x = 0
+  if (roverCommand.startingPosition.x > roverCommand.board.x) newRoverCommand.startingPosition.x = roverCommand.board.x
+  if (roverCommand.startingPosition.y < 0) newRoverCommand.startingPosition.y = 0
+  if (roverCommand.startingPosition.y > roverCommand.board.y) newRoverCommand.startingPosition.y = roverCommand.board.y
+
+  // if (roverCommand.startingPosition.y > roverCommand.board.y) console.log(newRoverCommand)
+
+  return newRoverCommand
+}
+
 function formatPosition (roverCommand) {
   const x = roverCommand.startingPosition.x
   const y = roverCommand.startingPosition.y
@@ -121,6 +141,7 @@ function processMoves (roverCommand) {
   roverCommand = turnLeft(roverCommand)
   roverCommand = turnRight(roverCommand)
   roverCommand = moveRover(roverCommand)
+  roverCommand = keepRoverOnBoard(roverCommand)
   return processMoves(roverCommand)
 }
 

@@ -13,7 +13,7 @@ function genCmd (...bots) {
     botStarts += `\n${x} ${y} ${facing}`
     if (moves) botStarts += '\n' + moves
   }
-  return '5000 5000' + botStarts
+  return '5000 5000 ' + botStarts
 }
 
 describe("Rover that doesn't move", function () {
@@ -43,7 +43,6 @@ describe('Rover that turns', function () {
     expect(rover(genCmd(1, 1, 'N', 'R'))).to.equal('1 1 E')
   })
   it('should pass property based testing', function () {
-    this.timeout(150000)
     // forall (f: noMoveInput) -> roverPosition) => starting point
     const testRange = 100
     for (let x = 0; x < testRange; x++) {
@@ -58,6 +57,7 @@ describe('Rover that turns', function () {
           'W L S'].forEach(testcase => {
           const [facing, turn, newFacing] = testcase.split(' ')
           const simpleInput = genCmd(x, y, facing, turn)
+          // console.log(simpleInput)
           assert.strictEqual(rover(simpleInput), `${x} ${y} ${newFacing}`)
         })
       }
@@ -133,10 +133,31 @@ describe('Rover that makes multipe turns are equal', function () {
 })
 
 describe('Multiple Rovers that makes multipe turns are equal', function () {
-  it('mutliple rovers should move at the same time', function () {
+  it('mutliple rovers should move', function () {
     const simpleInput = genCmd(1, 1, 'N', 'RMLMRMLMRMLM', 2, 2, 'N', 'RMLMRMLMRMLM')
     const roverPos = rover(simpleInput)
     assert.strictEqual(roverPos, '4 4 N\n5 5 N')
+  })
+  it('multiple moves should pass property based testing', function () {
+    const testRange = 100
+    for (let x = 0; x < testRange; x++) {
+      for (let y = 0; y < testRange; y++) {
+        const simpleInputRL = genCmd(x, y, 'N', 'RMLMRMLMRMLM', x + 1, y + 1, 'N', 'MRMLMRMLMRML')
+        const roverRL = rover(simpleInputRL)
+        const simpleInputLR = genCmd(x, y, 'N', 'MRMLMRMLMRML', x + 1, y + 1, 'N', 'RMLMRMLMRMLM')
+        const roverLR = rover(simpleInputLR)
+        assert.strictEqual(roverLR.split('\n').length, 2)
+        assert.strictEqual(roverRL, roverLR)
+      }
+    }
+  })
+})
+
+describe('Multiple Rovers should not drive off the board', function () {
+  it('mutliple rovers should move', function () {
+    const simpleInput = genCmd(4999, 4999, 'N', 'RMLMRMLMRMLM', 5000, 5000, 'N', 'RMLMRMLMRMLM')
+    const roverPos = rover(simpleInput)
+    assert.strictEqual(roverPos, '5000 5000 N\n5000 5000 N')
   })
   it('multiple moves should pass property based testing', function () {
     const testRange = 100
