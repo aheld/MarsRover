@@ -22,12 +22,18 @@ function parseMultiCommands (stringInput) {
 }
 
 function parseCommands (stringInput) {
-  const [, startingPosition, moves] = stringInput.split('\n')
+  const [board, startingPosition, moves] = stringInput.split('\n')
   const [x, y, facing] = startingPosition.split(' ')
+  function getBoardPoints (board) {
+    const [x, y] = board.split(' ').map((i) => parseInt(i))
+    return { x, y }
+  }
+
   return {
+    board: getBoardPoints(board),
     startingPosition: {
-      x,
-      y,
+      x: parseInt(x),
+      y: parseInt(y),
       facing
     },
     moves: moves || ''
@@ -42,39 +48,40 @@ function _processMoveAndUpdatePosition (roverCommand, newPosition) {
   return newRoverCommand
 }
 
-function turnLeft (roverCommand) {
-  if (roverCommand.moves[0] !== 'L') return roverCommand
+function turn (cmd, lookup) {
+  return function (roverCommand) {
+    if (roverCommand.moves[0] !== cmd) return roverCommand
 
+    const newPosition = {
+      x: roverCommand.startingPosition.x,
+      y: roverCommand.startingPosition.y,
+      facing: lookup[roverCommand.startingPosition.facing]
+    }
+    return _processMoveAndUpdatePosition(roverCommand, newPosition)
+  }
+}
+
+const turnLeft = (() => {
   const leftTurn = new Map()
   leftTurn.N = 'W'
   leftTurn.W = 'S'
   leftTurn.S = 'E'
   leftTurn.E = 'N'
+  const cmd = 'L'
 
-  const newPosition = {
-    x: roverCommand.startingPosition.x,
-    y: roverCommand.startingPosition.y,
-    facing: leftTurn[roverCommand.startingPosition.facing]
-  }
-  return _processMoveAndUpdatePosition(roverCommand, newPosition)
-}
+  return turn(cmd, leftTurn)
+})()
 
-function turnRight (roverCommand) {
-  if (roverCommand.moves[0] !== 'R') return roverCommand
-
+const turnRight = (() => {
   const rightTurn = new Map()
   rightTurn.N = 'E'
   rightTurn.W = 'N'
   rightTurn.S = 'W'
   rightTurn.E = 'S'
+  const cmd = 'R'
 
-  const newPosition = {
-    x: roverCommand.startingPosition.x,
-    y: roverCommand.startingPosition.y,
-    facing: rightTurn[roverCommand.startingPosition.facing]
-  }
-  return _processMoveAndUpdatePosition(roverCommand, newPosition)
-}
+  return turn(cmd, rightTurn)
+})()
 
 function moveRover (roverCommand) {
   if (roverCommand.moves[0] !== 'M') return roverCommand
@@ -93,6 +100,20 @@ function moveRover (roverCommand) {
   }
 
   return _processMoveAndUpdatePosition(roverCommand, newPosition)
+}
+
+function keepRoverOnBoard (roverCommand) {
+  // console.log(roverCommand)
+  // if (roverCommand.startingPosition.y > roverCommand.board.y) console.log(roverCommand)
+  const newRoverCommand = deepCopy(roverCommand)
+  if (roverCommand.startingPosition.x < 0) newRoverCommand.startingPosition.x = 0
+  if (roverCommand.startingPosition.x > roverCommand.board.x) newRoverCommand.startingPosition.x = roverCommand.board.x
+  if (roverCommand.startingPosition.y < 0) newRoverCommand.startingPosition.y = 0
+  if (roverCommand.startingPosition.y > roverCommand.board.y) newRoverCommand.startingPosition.y = roverCommand.board.y
+
+  // if (roverCommand.startingPosition.y > roverCommand.board.y) console.log(newRoverCommand)
+
+  return newRoverCommand
 }
 
 function formatPosition (roverCommand) {
@@ -120,14 +141,12 @@ function processMoves (roverCommand) {
   roverCommand = turnLeft(roverCommand)
   roverCommand = turnRight(roverCommand)
   roverCommand = moveRover(roverCommand)
+  roverCommand = keepRoverOnBoard(roverCommand)
   return processMoves(roverCommand)
 }
 
 function processSingleBot (commands) {
-  return pipeline(commands,
-    parseCommands,
-    processMoves,
-    formatPosition)
+  return pipeline(commands, parseCommands, processMoves, formatPosition)
 }
 
 function fanoutCommands (multiRoverCommands) {
@@ -139,7 +158,8 @@ function formatResultsToString (arrayOfRoverPositions) {
 }
 
 module.exports = function (stringInput) {
-  return pipeline(stringInput,
+  return pipeline(
+    stringInput,
     parseMultiCommands,
     fanoutCommands,
     formatResultsToString
